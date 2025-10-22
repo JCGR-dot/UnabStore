@@ -37,16 +37,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(onClickBack :()-> Unit={
+
+}) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {onClick = onClickBack}) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
