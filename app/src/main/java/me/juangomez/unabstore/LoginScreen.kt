@@ -171,7 +171,7 @@ fun LoginScreen(onClickRegister:()-> Unit ={},onSuccesfullLogin : () -> Unit={})
             Button(
                 onClick = {
                     val isValidEmail :Boolean = validateEmail(inputEmail).first
-                    val isValidPassword :Boolean = validateEmail(inputPassword).first
+                    val isValidPassword :Boolean = validatePassword(inputPassword).first
 
                     emailError =validateEmail(inputEmail).second
                     passwordError=validatePassword(inputPassword).second
@@ -190,6 +190,11 @@ fun LoginScreen(onClickRegister:()-> Unit ={},onSuccesfullLogin : () -> Unit={})
                                 }
                             }
                     }else{
+                        loginError = when{
+                            !isValidEmail -> "El correo es invalido"
+                            !isValidPassword -> "La contraseña es invalida"
+                            else->""
+                        }
 
                     }
 

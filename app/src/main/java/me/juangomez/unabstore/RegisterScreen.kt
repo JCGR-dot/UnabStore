@@ -206,6 +206,9 @@ fun RegisterScreen(onClickBack :()-> Unit={},onSuccessfulRegister:()->Unit={}) {
                     }
                 }
             )
+            if(registerError.isNotEmpty()){
+                Text(registerError, color = Color.Red)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
