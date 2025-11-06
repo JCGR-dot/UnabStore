@@ -46,7 +46,21 @@ fun NavigationApp() {
                 myNavController.navigate("login"){
                     popUpTo(0)
                 }
-            })
+            },
+                onClickAgregarProducto = {
+                    myNavController.navigate("agregarProducto")
+                }
+            )
+        }
+        composable ("agregarProducto"){
+            AgregarProductoScreen (
+                onClickBack = {
+                    myNavController.popBackStack()
+                },
+                onProductoAgregado = {
+                    myNavController.popBackStack()
+                }
+            )
         }
     }
 }
