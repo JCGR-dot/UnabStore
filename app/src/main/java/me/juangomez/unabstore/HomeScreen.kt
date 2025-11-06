@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
@@ -43,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +69,16 @@ fun HomeScreen(
             // Manejar error
         } finally {
             isLoading = false
+        }
+    }
+
+    fun recargarProductos() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                productos = productoRepository.obtenerProductos()
+            } catch (e: Exception) {
+                // Manejar error
+            }
         }
     }
     Scaffold(
@@ -152,7 +166,12 @@ fun HomeScreen(
                         items(productos){ producto ->
                             ProductoItem(
                                 producto = producto,
-                                onEliminar = {}
+                                onEliminar = {
+                                    CoroutineScope(Dispatchers.IO).launch{
+                                        productoRepository.eliminarProducto(producto.id!!)
+                                        recargarProductos()
+                                    }
+                                }
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -201,6 +220,17 @@ fun ProductoItem(
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFFFF9900),
                     modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            IconButton(
+                onClick = onEliminar,
+                modifier = Modifier.padding(start = 8.dp)
+            ){
+                Icon(
+                    Icons.Filled.Delete,
+                    "Eliminar",
+                    tint = Color.Red
                 )
             }
         }
