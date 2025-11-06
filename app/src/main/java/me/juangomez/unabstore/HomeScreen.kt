@@ -2,14 +2,26 @@ package me.juangomez.unabstore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumTopAppBar
@@ -17,11 +29,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -29,9 +47,26 @@ import com.google.firebase.auth.auth
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onClickLogout: () -> Unit={}) {
+fun HomeScreen(
+    onClickLogout: () -> Unit={},
+    onClickAgregarProducto: () -> Unit = {}
+) {
     val auth = Firebase.auth
     val user = auth.currentUser
+    val productoRepository = ProductoRepository()
+
+    var productos by remember { mutableStateOf<List<Producto>>(emptyList()) }
+    var isLoading by remember {mutableStateOf(true)}
+
+    LaunchedEffect(key1 = Unit) {
+        try {
+            productos = productoRepository.obtenerProductos()
+        } catch (e: Exception) {
+            // Manejar error
+        } finally {
+            isLoading = false
+        }
+    }
     Scaffold(
         topBar = {
             MediumTopAppBar(
@@ -63,7 +98,13 @@ fun HomeScreen(onClickLogout: () -> Unit={}) {
                 )
             )
         },
-        bottomBar = {
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onClickAgregarProducto,
+                containerColor = Color(0xFFFF9900)
+            ) {
+                Icon(Icons.Filled.Add, "Agregar Producto")
+            }
         }
     ) { paddingValues ->
         Column(
@@ -78,12 +119,89 @@ fun HomeScreen(onClickLogout: () -> Unit={}) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("HOME SCREEN", fontSize = 30.sp)
-                if (user !=null){
-                    Text(user.email.toString())
-                }else{
-                    Text("No hay un Usuario")
+                Text(
+                    text = "Bienvenido, ${user?.email ?: "Usuario"}",
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                if (isLoading){
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator(color = Color(0xFFFF9900))
+                    }
+                } else if (productos.isEmpty()){
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                        "No hay productos disponibles",
+                        fontSize = 18.sp,
+                        color = Color.Gray
+                        )
+                    }
+                }else {
+                    LazyColumn (
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ){
+                        items(productos){ producto ->
+                            ProductoItem(
+                                producto = producto,
+                                onEliminar = {}
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductoItem(
+    producto: Producto,
+    onEliminar: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ){
+                Text(
+                    text = producto.nombre,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Text(
+                    text = producto.descripcion,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = "$${producto.precio}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFFFF9900),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
     }
