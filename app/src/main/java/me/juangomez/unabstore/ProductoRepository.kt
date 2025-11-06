@@ -3,6 +3,7 @@ package me.juangomez.unabstore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+
 import kotlinx.coroutines.tasks.await
 
 class ProductoRepository {
@@ -18,7 +19,7 @@ class ProductoRepository {
         val querySnapshot = productosCollection.get().await()
         return querySnapshot.documents.map { document ->
             Producto(
-                id = document.id,
+                id = document.id, // CORRECCIÓN: agregar el id del documento
                 nombre = document.getString("nombre") ?: "",
                 descripcion = document.getString("descripcion") ?: "",
                 precio = document.getDouble("precio") ?: 0.0
