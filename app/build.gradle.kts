@@ -66,6 +66,6 @@ dependencies {
     //Firebase
     implementation(libs.firebase.bom)
 
-    //Auth
-
+    //FireStore
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
 }
