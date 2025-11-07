@@ -47,6 +47,7 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,9 +189,12 @@ fun ProductoItem(
     onEliminar: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(12.dp)
     ){
         Row(
             modifier = Modifier
@@ -206,18 +210,19 @@ fun ProductoItem(
                     text = producto.nombre,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color(0xFF333333)
                 )
                 Text(
                     text = producto.descripcion,
                     fontSize = 14.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(top = 4.dp)
+                    color = Color(0xFF666666),
+                    modifier = Modifier.padding(top = 4.dp),
+                    maxLines = 2
                 )
                 Text(
-                    text = "$${producto.precio}",
+                    text = "$${"%.2f".format(producto.precio)}",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     color = Color(0xFFFF9900),
                     modifier = Modifier.padding(top = 8.dp)
                 )
