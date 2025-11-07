@@ -19,7 +19,7 @@ class ProductoRepository {
         val querySnapshot = productosCollection.get().await()
         return querySnapshot.documents.map { document ->
             Producto(
-                id = document.id, // CORRECCIÓN: agregar el id del documento
+                id = document.id,
                 nombre = document.getString("nombre") ?: "",
                 descripcion = document.getString("descripcion") ?: "",
                 precio = document.getDouble("precio") ?: 0.0
